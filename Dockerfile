@@ -52,7 +52,7 @@ RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o 
     && chmod a+rx /usr/local/bin/yt-dlp
 
 RUN pip3 install --no-cache-dir \
-    torch torchaudio --index-url https://download.pytorch.org/whl/cpu \
+    torch torchaudio --extra-index-url https://download.pytorch.org/whl/cpu \
     && pip3 install --no-cache-dir \
     fastapi uvicorn python-multipart requests \
     faster-whisper scipy gTTS playwright librosa
