@@ -187,6 +187,15 @@ func downloadAndSend(client *whatsmeow.Client, v *events.Message, targetUrl, mod
 		downloadViaYtDlp(client, v, targetUrl, isAudio, resolution)
 	}
 
+	// 🎯 Agar user ne specific resolution mangi hai (144p/240p/.../1080p),
+	// to Tier-2 (external scraper) skip karo — woh resolution guarantee nahi karta.
+	// Seedha Tier-3 (yt-dlp) pe jao jahan height-based format control hai.
+	if !isAudio && strings.HasSuffix(resolution, "p") {
+		fmt.Printf("🎯 [QUALITY LOCK] Specific resolution requested (%s) — skipping Tier-2, going straight to yt-dlp.\n", resolution)
+		fallbackToYtDlp()
+		return
+	}
+
 	fmt.Printf("\n📥 [INTERNAL SCRAPER] Sending raw link: %s\n", targetUrl) 
 	
 	title, downloadURL, err := extractVidsSaveURL(targetUrl, mode)
