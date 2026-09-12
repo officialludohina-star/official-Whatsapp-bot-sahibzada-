@@ -123,7 +123,7 @@ func downloadViaAPI(client *whatsmeow.Client, v *events.Message, targetUrl, reso
 		stopAnim() 
 		mode := "video"
 		if isAudio { mode = "audio" }
-		downloadAndSend(client, v, targetUrl, mode)
+		downloadAndSend(client, v, targetUrl, mode, resolution)
 	}
 
 
@@ -175,11 +175,16 @@ func downloadAndSend(client *whatsmeow.Client, v *events.Message, targetUrl, mod
 
 	isAudio := mode == "audio"
 
+	resolution := "best"
+	if len(optionalFormat) > 0 && optionalFormat[0] != "" {
+		resolution = optionalFormat[0]
+	}
+
 	// 🔄 FALLBACK LOGIC -> Goes to Tier 3 (yt-dlp)
 	fallbackToYtDlp := func() {
 		stopAnim()
 		fmt.Printf("🔄 Falling back to Tier-3 (yt-dlp)...\n")
-		downloadViaYtDlp(client, v, targetUrl, isAudio)
+		downloadViaYtDlp(client, v, targetUrl, isAudio, resolution)
 	}
 
 	fmt.Printf("\n📥 [INTERNAL SCRAPER] Sending raw link: %s\n", targetUrl) 
@@ -265,7 +270,7 @@ func downloadAndSend(client *whatsmeow.Client, v *events.Message, targetUrl, mod
 
 
 // 3️⃣ TIER 3: YT-DLP FALLBACK (NEW FUNCTION)
-func downloadViaYtDlp(client *whatsmeow.Client, v *events.Message, targetUrl string, isAudio bool) {
+func downloadViaYtDlp(client *whatsmeow.Client, v *events.Message, targetUrl string, isAudio bool, resolution string) {
 	// ==========================================
 	// 🌀 DYNAMIC REACTION ANIMATION
 	// ==========================================
@@ -304,6 +309,12 @@ func downloadViaYtDlp(client *whatsmeow.Client, v *events.Message, targetUrl str
 	formatArgs := "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
 	if isAudio {
 		formatArgs = "bestaudio/best"
+	} else if resolution != "" && resolution != "best" {
+		height := strings.TrimSuffix(resolution, "p")
+		formatArgs = fmt.Sprintf(
+			"bestvideo[height<=%s][ext=mp4]+bestaudio[ext=m4a]/best[height<=%s][ext=mp4]/best[height<=%s]",
+			height, height, height,
+		)
 	}
 
 	// yt-dlp command setup (Android Spoofing)
