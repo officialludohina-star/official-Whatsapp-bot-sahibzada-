@@ -321,29 +321,32 @@ func downloadViaYtDlp(client *whatsmeow.Client, v *events.Message, targetUrl str
 	} else if resolution != "" && resolution != "best" {
 		height := strings.TrimSuffix(resolution, "p")
 		formatArgs = fmt.Sprintf(
-			"bestvideo[height<=%s][ext=mp4]+bestaudio[ext=m4a]/best[height<=%s][ext=mp4]/best[height<=%s]",
+			"bestvideo[height<=%s][ext=mp4]+bestaudio[ext=m4a]/best[height<=%s][ext=mp4]/best[height<=%s]/best",
 			height, height, height,
 		)
 	}
 
-	// yt-dlp command setup (Android Spoofing)
+	// yt-dlp command setup (Android + Web Spoofing — android akela high-res streams nahi deta)
 	cmd := exec.Command("yt-dlp",
 		targetUrl,
 		"--user-agent", "Mozilla/5.0 (Linux; Android 13; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36",
 		"--add-header", `Sec-CH-UA-Platform: "Android"`,
 		"--add-header", "Sec-CH-UA-Mobile: ?1",
 		"--add-header", "Accept-Language: en-US,en;q=0.9",
-		"--extractor-args", "youtube:player_client=android",
+		"--extractor-args", "youtube:player_client=android,web",
 		"--format", formatArgs,
 		"--output", outputTemplate,
 	)
 
-	fmt.Printf("🚀 [YT-DLP] Executing command for URL: %s\n", targetUrl)
+	var stderrBuf bytes.Buffer
+	cmd.Stderr = &stderrBuf
+
+	fmt.Printf("🚀 [YT-DLP] Executing command for URL: %s | format: %s\n", targetUrl, formatArgs)
 	err := cmd.Run()
 
 	if err != nil {
 		stopAnim()
-		fmt.Printf("❌ [YT-DLP ERROR]: %v\n", err)
+		fmt.Printf("❌ [YT-DLP ERROR]: %v\n👉 [YT-DLP STDERR]: %s\n", err, stderrBuf.String())
 		// 🔴 FINAL FAILURE: یوزر کو صرف یہاں ایرر میسج جائے گا
 		replyMessage(client, v, "❌ *Download Failed:* System could not process this link.")
 		react(client, v, "❌")
