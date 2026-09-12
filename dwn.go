@@ -333,7 +333,7 @@ func downloadViaYtDlp(client *whatsmeow.Client, v *events.Message, targetUrl str
 		"--add-header", `Sec-CH-UA-Platform: "Android"`,
 		"--add-header", "Sec-CH-UA-Mobile: ?1",
 		"--add-header", "Accept-Language: en-US,en;q=0.9",
-		"--extractor-args", "youtube:player_client=android,web",
+		"--extractor-args", "youtube:player_client=android",
 		"--format", formatArgs,
 		"--output", outputTemplate,
 	)
