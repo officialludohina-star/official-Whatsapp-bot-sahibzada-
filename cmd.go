@@ -1110,7 +1110,7 @@ func sendMainMenu(client *whatsmeow.Client, v *events.Message, settings BotSetti
 				Participant:   proto.String("0@s.whatsapp.net"), // 👈 ویریفائیڈ لک کے لیے
 				RemoteJID:     proto.String("status@broadcast"), // 🔥 یہ لائن اسے "Status" کا روپ دے گی!
 				QuotedMessage: &waProto.Message{
-					Conversation: proto.String("💫 𝗛𝗜𝗡𝗔 ❤️ x 🔥 𝗟𝗘𝗚𝗘𝗡𝗗 💫 Official Bot ✅"),
+					Conversation: proto.String("💫 "💫 𝗛𝗜𝗡𝗔 ❤️ x 🔥 𝗦𝗔𝗛𝗜𝗕𝗭𝗔𝗗𝗔 💫 Official Bot ✅"),
 				},
 			},
 		},
